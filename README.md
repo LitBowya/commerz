@@ -1,1 +1,1 @@
-# commerz
+# commerz like shopify
