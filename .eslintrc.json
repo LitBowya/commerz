@@ -1,0 +1,57 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "module",
+    "project": ["./tsconfig.json", "./frontend/tsconfig.json", "./backend/tsconfig.json"]
+  },
+  "plugins": ["@typescript-eslint", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "@typescript-eslint/recommended",
+    "@typescript-eslint/recommended-requiring-type-checking",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/no-misused-promises": "error"
+  },
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "overrides": [
+    {
+      "files": ["frontend/**/*.{ts,tsx}"],
+      "env": {
+        "browser": true,
+        "es2022": true
+      },
+      "extends": ["next/core-web-vitals"],
+      "rules": {
+        "react/no-unescaped-entities": "off",
+        "@next/next/no-page-custom-font": "off"
+      }
+    },
+    {
+      "files": ["backend/**/*.ts"],
+      "env": {
+        "node": true
+      }
+    }
+  ],
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "build/",
+    ".next/",
+    "coverage/"
+  ]
+}
