@@ -1,0 +1,1257 @@
+openapi: 3.0.3
+info:
+  title: Africa E-Commerce Platform API
+  description: Comprehensive e-commerce API designed for African markets with mobile-first design, offline capabilities, and local payment integration
+  version: 1.0.0
+  contact:
+    name: Commerz Platform
+    email: support@commerz.africa
+
+servers:
+  - url: https://api.commerz.africa/v1
+    description: Production server
+  - url: https://staging-api.commerz.africa/v1
+    description: Staging server
+
+security:
+  - BearerAuth: []
+  - ApiKeyAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new merchant account
+      operationId: registerMerchant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MerchantRegistration'
+      responses:
+        '201':
+          description: Merchant registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Invalid registration data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Authenticate merchant
+      operationId: loginMerchant
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/verify-phone:
+    post:
+      tags: [Authentication]
+      summary: Verify phone number with OTP
+      operationId: verifyPhone
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PhoneVerification'
+      responses:
+        '200':
+          description: Phone verified successfully
+        '400':
+          description: Invalid OTP or phone number
+
+  # Store Management Endpoints
+  /stores:
+    get:
+      tags: [Store Management]
+      summary: List merchant stores
+      operationId: listStores
+      responses:
+        '200':
+          description: List of merchant stores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Store'
+
+    post:
+      tags: [Store Management]
+      summary: Create new store
+      operationId: createStore
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateStoreRequest'
+      responses:
+        '201':
+          description: Store created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+
+  /stores/{storeId}:
+    get:
+      tags: [Store Management]
+      summary: Get store details
+      operationId: getStore
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Store details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+
+    put:
+      tags: [Store Management]
+      summary: Update store configuration
+      operationId: updateStore
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStoreRequest'
+      responses:
+        '200':
+          description: Store updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Store'
+
+  # Product Catalog Endpoints
+  /stores/{storeId}/products:
+    get:
+      tags: [Product Catalog]
+      summary: List store products
+      operationId: listProducts
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, active, archived]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: List of products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+
+    post:
+      tags: [Product Catalog]
+      summary: Create new product
+      operationId: createProduct
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /stores/{storeId}/products/{productId}:
+    get:
+      tags: [Product Catalog]
+      summary: Get product details
+      operationId: getProduct
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+    put:
+      tags: [Product Catalog]
+      summary: Update product
+      operationId: updateProduct
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  # Order Management Endpoints
+  /stores/{storeId}/orders:
+    get:
+      tags: [Order Management]
+      summary: List store orders
+      operationId: listOrders
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, confirmed, processing, shipped, delivered, cancelled, refunded]
+        - name: financial_status
+          in: query
+          schema:
+            type: string
+            enum: [pending, paid, partially_paid, refunded, voided]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: List of orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+
+  /stores/{storeId}/orders/{orderId}:
+    get:
+      tags: [Order Management]
+      summary: Get order details
+      operationId: getOrder
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+    patch:
+      tags: [Order Management]
+      summary: Update order status
+      operationId: updateOrderStatus
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateOrderStatusRequest'
+      responses:
+        '200':
+          description: Order status updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+
+  # Payment Processing Endpoints
+  /payments/process:
+    post:
+      tags: [Payments]
+      summary: Process payment for order
+      operationId: processPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '200':
+          description: Payment processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Payment failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentErrorResponse'
+
+  /payments/{paymentId}/status:
+    get:
+      tags: [Payments]
+      summary: Get payment status
+      operationId: getPaymentStatus
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Payment status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatus'
+
+  # Customer-facing Storefront Endpoints
+  /storefront/{storeSlug}:
+    get:
+      tags: [Storefront]
+      summary: Get storefront configuration
+      operationId: getStorefront
+      security: []
+      parameters:
+        - name: storeSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Storefront configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorefrontConfig'
+
+  /storefront/{storeSlug}/products:
+    get:
+      tags: [Storefront]
+      summary: Browse storefront products
+      operationId: browseProducts
+      security: []
+      parameters:
+        - name: storeSlug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [price_asc, price_desc, name_asc, name_desc, created_asc, created_desc]
+            default: created_desc
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: Product listings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StorefrontProductListResponse'
+
+  /storefront/{storeSlug}/cart:
+    post:
+      tags: [Storefront]
+      summary: Add item to cart
+      operationId: addToCart
+      security: []
+      parameters:
+        - name: storeSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddToCartRequest'
+      responses:
+        '200':
+          description: Item added to cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+
+  /storefront/{storeSlug}/checkout:
+    post:
+      tags: [Storefront]
+      summary: Process checkout
+      operationId: processCheckout
+      security: []
+      parameters:
+        - name: storeSlug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+      responses:
+        '200':
+          description: Checkout processed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    # Authentication Schemas
+    MerchantRegistration:
+      type: object
+      required: [email, password, first_name, last_name, phone, country_code]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+        business_name:
+          type: string
+        business_type:
+          type: string
+          enum: [individual, sme, cooperative, enterprise]
+        country_code:
+          type: string
+          pattern: '^[A-Z]{2}$'
+        preferred_language:
+          type: string
+          pattern: '^[a-z]{2}$'
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+        remember_me:
+          type: boolean
+          default: false
+
+    AuthResponse:
+      type: object
+      required: [access_token, refresh_token, merchant, expires_in]
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        token_type:
+          type: string
+          default: Bearer
+        expires_in:
+          type: integer
+        merchant:
+          $ref: '#/components/schemas/Merchant'
+
+    PhoneVerification:
+      type: object
+      required: [phone, otp_code]
+      properties:
+        phone:
+          type: string
+          pattern: '^\+[1-9]\d{1,14}$'
+        otp_code:
+          type: string
+          pattern: '^\d{6}$'
+
+    # Core Entity Schemas
+    Merchant:
+      type: object
+      required: [id, email, first_name, last_name, verification_status]
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        business_name:
+          type: string
+        business_type:
+          type: string
+          enum: [individual, sme, cooperative, enterprise]
+        verification_status:
+          type: string
+          enum: [pending, verified, suspended]
+        preferred_language:
+          type: string
+        country_code:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Store:
+      type: object
+      required: [id, merchant_id, name, slug, currency, is_active]
+      properties:
+        id:
+          type: string
+          format: uuid
+        merchant_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        domain:
+          type: string
+        subdomain:
+          type: string
+        description:
+          type: string
+        logo_url:
+          type: string
+          format: uri
+        banner_url:
+          type: string
+          format: uri
+        theme_id:
+          type: string
+          format: uuid
+        theme_config:
+          type: object
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        languages:
+          type: array
+          items:
+            type: string
+            pattern: '^[a-z]{2}$'
+        business_address:
+          type: object
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+        social_links:
+          type: object
+        seo_settings:
+          type: object
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Product:
+      type: object
+      required: [id, store_id, title, status, handle]
+      properties:
+        id:
+          type: string
+          format: uuid
+        store_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        short_description:
+          type: string
+        product_type:
+          type: string
+        vendor:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [draft, active, archived]
+        handle:
+          type: string
+        images:
+          type: array
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+              alt_text:
+                type: string
+              sort_order:
+                type: integer
+        variants:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductVariant'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ProductVariant:
+      type: object
+      required: [id, product_id, title, price]
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+          format: decimal
+        compare_at_price:
+          type: number
+          format: decimal
+        inventory_quantity:
+          type: integer
+        track_inventory:
+          type: boolean
+        option1:
+          type: string
+        option2:
+          type: string
+        option3:
+          type: string
+
+    Order:
+      type: object
+      required: [id, order_number, store_id, status, financial_status, currency, total]
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_number:
+          type: string
+        store_id:
+          type: string
+          format: uuid
+        customer_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        status:
+          type: string
+          enum: [pending, confirmed, processing, shipped, delivered, cancelled, refunded]
+        financial_status:
+          type: string
+          enum: [pending, paid, partially_paid, refunded, voided]
+        currency:
+          type: string
+        subtotal:
+          type: number
+          format: decimal
+        tax_total:
+          type: number
+          format: decimal
+        shipping_total:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        shipping_address:
+          type: object
+        billing_address:
+          type: object
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        created_at:
+          type: string
+          format: date-time
+
+    OrderItem:
+      type: object
+      required: [id, order_id, product_variant_id, quantity, price, total]
+      properties:
+        id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        product_variant_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        price:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        product_title:
+          type: string
+        variant_title:
+          type: string
+
+    # Request/Response Schemas
+    CreateStoreRequest:
+      type: object
+      required: [name, currency]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+        currency:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        business_address:
+          type: object
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+
+    UpdateStoreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        logo_url:
+          type: string
+          format: uri
+        theme_config:
+          type: object
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+        social_links:
+          type: object
+
+    CreateProductRequest:
+      type: object
+      required: [title, variants]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        product_type:
+          type: string
+        vendor:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        images:
+          type: array
+          items:
+            type: object
+        variants:
+          type: array
+          items:
+            type: object
+            required: [title, price]
+            properties:
+              title:
+                type: string
+              price:
+                type: number
+                format: decimal
+              sku:
+                type: string
+              inventory_quantity:
+                type: integer
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, archived]
+        tags:
+          type: array
+          items:
+            type: string
+
+    PaymentRequest:
+      type: object
+      required: [order_id, gateway_id, method, amount, currency]
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        gateway_id:
+          type: string
+          format: uuid
+        method:
+          type: string
+          enum: [card, mobile_money, bank_transfer, cash_on_delivery]
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        method_details:
+          type: object
+        customer_details:
+          type: object
+
+    PaymentResponse:
+      type: object
+      required: [payment_id, status, amount, currency]
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, success, failed]
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        transaction_id:
+          type: string
+        gateway_response:
+          type: object
+        redirect_url:
+          type: string
+          format: uri
+
+    # Storefront Schemas
+    StorefrontConfig:
+      type: object
+      required: [store, theme_config]
+      properties:
+        store:
+          $ref: '#/components/schemas/Store'
+        theme_config:
+          type: object
+        payment_methods:
+          type: array
+          items:
+            type: string
+        shipping_countries:
+          type: array
+          items:
+            type: string
+
+    AddToCartRequest:
+      type: object
+      required: [variant_id, quantity]
+      properties:
+        variant_id:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          minimum: 1
+        properties:
+          type: object
+
+    CartResponse:
+      type: object
+      required: [items, total, currency]
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+        subtotal:
+          type: number
+          format: decimal
+        total:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        item_count:
+          type: integer
+
+    CheckoutRequest:
+      type: object
+      required: [customer_info, shipping_address, payment_method]
+      properties:
+        customer_info:
+          type: object
+          required: [email]
+          properties:
+            email:
+              type: string
+              format: email
+            first_name:
+              type: string
+            last_name:
+              type: string
+            phone:
+              type: string
+        shipping_address:
+          type: object
+          required: [address1, city, country_code]
+        billing_address:
+          type: object
+        payment_method:
+          type: string
+        payment_details:
+          type: object
+
+    CheckoutResponse:
+      type: object
+      required: [order_id, status, total]
+      properties:
+        order_id:
+          type: string
+          format: uuid
+        order_number:
+          type: string
+        status:
+          type: string
+        total:
+          type: number
+          format: decimal
+        payment_url:
+          type: string
+          format: uri
+        confirmation_url:
+          type: string
+          format: uri
+
+    # List Response Schemas
+    ProductListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    OrderListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    StorefrontProductListResponse:
+      type: object
+      required: [data, pagination]
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              title:
+                type: string
+              handle:
+                type: string
+              images:
+                type: array
+              price_range:
+                type: object
+                properties:
+                  min:
+                    type: number
+                    format: decimal
+                  max:
+                    type: number
+                    format: decimal
+        pagination:
+          $ref: '#/components/schemas/Pagination'
+
+    Pagination:
+      type: object
+      required: [page, limit, total, has_next, has_previous]
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        has_next:
+          type: boolean
+        has_previous:
+          type: boolean
+
+    # Error Schemas
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+        timestamp:
+          type: string
+          format: date-time
+
+    PaymentErrorResponse:
+      type: object
+      required: [error, message, payment_id]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        payment_id:
+          type: string
+          format: uuid
+        failure_reason:
+          type: string
+        retry_allowed:
+          type: boolean
+
+    PaymentStatus:
+      type: object
+      required: [payment_id, status, amount, currency]
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, success, failed, cancelled, refunded]
+        amount:
+          type: number
+          format: decimal
+        currency:
+          type: string
+        transaction_id:
+          type: string
+        processed_at:
+          type: string
+          format: date-time
+
+    UpdateOrderStatusRequest:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [confirmed, processing, shipped, delivered, cancelled]
+        tracking_number:
+          type: string
+        tracking_url:
+          type: string
+          format: uri
+        notes:
+          type: string
