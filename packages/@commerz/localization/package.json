@@ -1,0 +1,21 @@
+{
+  "name": "@commerz/localization",
+  "version": "1.0.0",
+  "description": "Localization and multi-language support library for Commerz platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "intl": "^1.2.5"
+  },
+  "devDependencies": {
+    "@types/intl": "^1.2.0",
+    "typescript": "5.2.4"
+  }
+}

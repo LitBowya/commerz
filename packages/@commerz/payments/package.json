@@ -1,0 +1,22 @@
+{
+  "name": "@commerz/payments",
+  "version": "1.0.0",
+  "description": "Payment processing library for Commerz platform with African payment gateways",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "axios": "^1.5.0",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.1",
+    "typescript": "5.2.4"
+  }
+}

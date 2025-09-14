@@ -1,0 +1,21 @@
+{
+  "name": "@commerz/store-builder",
+  "version": "1.0.0",
+  "description": "Store builder and customization library for Commerz platform",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "dependencies": {
+    "color": "^4.2.3"
+  },
+  "devDependencies": {
+    "@types/color": "^3.0.3",
+    "typescript": "5.2.4"
+  }
+}

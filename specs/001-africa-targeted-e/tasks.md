@@ -34,13 +34,13 @@
 
 ## Phase 3.2: Library Structure Creation (T009-T015)
 
-- [ ] T009 [P] Create @commerz/auth library structure in packages/@commerz/auth/
-- [ ] T010 [P] Create @commerz/products library structure in packages/@commerz/products/
-- [ ] T011 [P] Create @commerz/orders library structure in packages/@commerz/orders/
-- [ ] T012 [P] Create @commerz/payments library structure in packages/@commerz/payments/
-- [ ] T013 [P] Create @commerz/store-builder library structure in packages/@commerz/store-builder/
-- [ ] T014 [P] Create @commerz/analytics library structure in packages/@commerz/analytics/
-- [ ] T015 [P] Create @commerz/localization library structure in packages/@commerz/localization/
+- [x] T009 [P] Create @commerz/auth library structure in packages/@commerz/auth/
+- [x] T010 [P] Create @commerz/products library structure in packages/@commerz/products/
+- [x] T011 [P] Create @commerz/orders library structure in packages/@commerz/orders/
+- [x] T012 [P] Create @commerz/payments library structure in packages/@commerz/payments/
+- [x] T013 [P] Create @commerz/store-builder library structure in packages/@commerz/store-builder/
+- [x] T014 [P] Create @commerz/analytics library structure in packages/@commerz/analytics/
+- [x] T015 [P] Create @commerz/localization library structure in packages/@commerz/localization/
 
 ## Phase 3.3: Database Schema & Models (T016-T029) ⚠️ MUST BE DONE BEFORE TESTS
 
